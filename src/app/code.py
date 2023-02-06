@@ -3,21 +3,14 @@ sys.path.append('/remote/lib')
 
 import time, gc, os
 import neopixel
-# import board, digitalio
-# import feathers3
-# import busio
-# import math
-# from adafruit_lis3mdl import LIS3MDL
-# import asyncio
+import feathers3
 
 import machine
 import uasyncio as asyncio
-import math
+
 from lis3mdl import LIS3MDL
 from tact import Tact
-
-import feathers3
-import ble_services
+from ble_services import BLEService
 
 # Define pins
 class Pins:
@@ -38,10 +31,6 @@ pixel = neopixel.NeoPixel(PINS.NEOPIXEL, 1)
 print("\nHello from FeatherS3!")
 print("------------------\n")
 
-#print(f"VBAT voltage is {tinys3.get_battery_voltage()}v")
-print("Starting BLE")
-asyncio.run(ble_services.BLEService().main())
-
 lis3mdl = LIS3MDL(machine.I2C(1, scl=PINS.SCL, sda=PINS.SDA))
 
 pin_x = Tact(PINS.TACT_X)
@@ -58,27 +47,36 @@ async def drive(pin):
         pin.pin.value(False)
         await asyncio.sleep(pin.half_period)
 
-scale_exponent = 2
-pre_scale_factor = 1.01
 async def update():
     while True:
         x, y, z = lis3mdl.read()
         # print("Magnetic field: ({}, {}, {})".format(x, y, z))
 
-        pin_x.half_period = 0 if x == 0 else 1 / math.pow(x * pre_scale_factor, scale_exponent) * 10
-        pin_y.half_period = 0 if y == 0 else 1 / math.pow(y * pre_scale_factor, scale_exponent) * 10
-        pin_z.half_period = 0 if z == 0 else 1 / math.pow(z * pre_scale_factor, scale_exponent) * 10
+        pin_x.half_period = x
+        pin_y.half_period = y
+        pin_z.half_period = z
 
-        print("half period: ({}, {}, {})".format(
-            0 if pin_x.half_period == 0 else 1/pin_x.half_period,
-            0 if pin_y.half_period == 0 else 1/pin_y.half_period,
-            0 if pin_z.half_period == 0 else 1/pin_z.half_period,
+        # pin_x.half_period = 0 if x == 0 else 1 / math.pow(x * pre_scale_factor, scale_exponent) * 10
+        # pin_y.half_period = 0 if y == 0 else 1 / math.pow(y * pre_scale_factor, scale_exponent) * 10
+        # pin_z.half_period = 0 if z == 0 else 1 / math.pow(z * pre_scale_factor, scale_exponent) * 10
+
+        print("Frequency: ({}, {}, {})".format(
+            pin_x.hz
+            ,pin_y.hz
+            ,pin_z.hz
+            # 0 if pin_x.half_period == 0 else 1/pin_x.half_period,
+            # 0 if pin_y.half_period == 0 else 1/pin_y.half_period,
+            # 0 if pin_z.half_period == 0 else 1/pin_z.half_period,
         ))
-        await asyncio.sleep(0.01)
+        await asyncio.sleep(0.5)
 
-
-# asyncio.run(asyncio.gather(update()))
-asyncio.run(asyncio.gather(drive(pin_x), drive(pin_y), drive(pin_z), update()))
+asyncio.run(asyncio.gather(
+    drive(pin_x)
+    ,drive(pin_y)
+    ,drive(pin_z)
+    ,update()
+    ,BLEService(pin_x, pin_y, pin_z).main()
+))
 
 
 # half_period = 0.1

@@ -47,7 +47,12 @@ mpremote connect $DEVICE
 mpremote connect $DEVICE ls
 
 # Mount the source directory and run the code
-mpremote connect $DEVICE mount src exec "import code.py"
+mpremote connect $DEVICE mount src/app exec "import code.py"
+```
+
+```
+# Copy the aioble library on the device to make development faster
+mpremote connect $DEVICE cp -r src/packages/aioble/ :
 ```
 
 FeatherS3 helper library: https://github.com/UnexpectedMaker/esp32s3/blob/main/code/micropython/helper%20libraries/feathers3/feathers3.py
@@ -56,3 +61,16 @@ FeatherS3 helper library: https://github.com/UnexpectedMaker/esp32s3/blob/main/c
 import esp32
 
 esp32.hall_sensor()
+
+```
+# wifi code, incase you need it.
+import network
+
+wlan = network.WLAN(network.STA_IF)
+wlan.active(True)
+
+wlan.connect('Lorenz-Family_v2.0', 'firebase')
+
+while not wlan.isconnected():
+    pass
+```
