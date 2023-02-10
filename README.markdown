@@ -55,13 +55,6 @@ mpremote connect $DEVICE mount src/app exec "import code.py"
 mpremote connect $DEVICE cp -r src/packages/aioble/ :
 ```
 
-FeatherS3 helper library: https://github.com/UnexpectedMaker/esp32s3/blob/main/code/micropython/helper%20libraries/feathers3/feathers3.py
-
-
-import esp32
-
-esp32.hall_sensor()
-
 ```
 # wifi code, incase you need it.
 import network
@@ -74,3 +67,16 @@ wlan.connect('Lorenz-Family_v2.0', 'firebase')
 while not wlan.isconnected():
     pass
 ```
+
+## TODO
+
+-[x] Trigger the BLE on hall effect sensor
+       ```
+       import esp32
+       esp32.hall_sensor()
+       ```
+-[x] Power down the BLE when not in use
+-[x] Why does BLE crash when the client times out?
+-[x] Why did my inverse frequency numbers go up?
+-[x] Do something fun with the pixel: FeatherS3 helper library: https://github.com/UnexpectedMaker/esp32s3/blob/main/code/micropython/helper%20libraries/feathers3/feathers3.py
+https://github.com/UnexpectedMaker/esp32s3/blob/main/code/micropython/helper%20libraries/feathers3/feathers3.py

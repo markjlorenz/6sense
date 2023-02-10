@@ -56,19 +56,12 @@ async def update():
         pin_y.half_period = y
         pin_z.half_period = z
 
-        # pin_x.half_period = 0 if x == 0 else 1 / math.pow(x * pre_scale_factor, scale_exponent) * 10
-        # pin_y.half_period = 0 if y == 0 else 1 / math.pow(y * pre_scale_factor, scale_exponent) * 10
-        # pin_z.half_period = 0 if z == 0 else 1 / math.pow(z * pre_scale_factor, scale_exponent) * 10
-
         print("Frequency: ({}, {}, {})".format(
             pin_x.hz
             ,pin_y.hz
             ,pin_z.hz
-            # 0 if pin_x.half_period == 0 else 1/pin_x.half_period,
-            # 0 if pin_y.half_period == 0 else 1/pin_y.half_period,
-            # 0 if pin_z.half_period == 0 else 1/pin_z.half_period,
         ))
-        await asyncio.sleep(0.5)
+        await asyncio.sleep(0.01)
 
 asyncio.run(asyncio.gather(
     drive(pin_x)

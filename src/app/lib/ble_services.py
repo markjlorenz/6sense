@@ -1,6 +1,5 @@
 import sys
-sys.path.append('/src/packages')
-sys.path.append("")
+sys.path.append("/src/packages")
 
 from micropython import const
 
@@ -10,6 +9,8 @@ import bluetooth
 import random
 import struct
 import feathers3
+
+DEVICE_NAME = "6sense"
 
 # org.bluetooth.service.environmental_sensing
 _ENV_SENSE_UUID = bluetooth.UUID(0x181A)
@@ -28,6 +29,9 @@ _ADV_APPEARANCE_GENERIC_HID = const(960)
 
 # How frequently to send advertising beacons.
 _ADV_INTERVAL_MS = 250_000
+
+LIGHT_THRESHOLD = 700 # bigger number, more light
+CONNECTION_TIMEOUT = 20.0  # seconds
 
 class BLEService:
 
@@ -63,27 +67,46 @@ class BLEService:
         while True:
             batt_value = feathers3.get_battery_voltage()
             self.batt_characteristic.write(self._encode(batt_value))
-            await asyncio.sleep_ms(1000)
+            await asyncio.sleep_ms(1_000)
 
     async def pins_task(self):
         while True:
             self.magx_characteristic.write(self._encode(self.pin_x.hz))
             self.magy_characteristic.write(self._encode(self.pin_y.hz))
             self.magz_characteristic.write(self._encode(self.pin_z.hz))
-            await asyncio.sleep_ms(1000)
+            await asyncio.sleep_ms(1_000)
 
     # Serially wait for connections. Don't advertise while a central is
     # connected.
+    #
+    # When exposed to light, you get 20 second to connect to and read from BLE
+    # after 20 seconds clients will automtically disconnect, and the light
+    # sensor will check ambient light again.
+    #
     async def peripheral_task(self):
         while True:
-            async with await aioble.advertise(
-                _ADV_INTERVAL_MS,
-                name="6sense",
-                services=[_ENV_SENSE_UUID],
-                appearance=_ADV_APPEARANCE_GENERIC_HID,
-            ) as connection:
-                print("Connection from", connection.device)
-                await connection.disconnected()
+            if feathers3.get_amb_light() > LIGHT_THRESHOLD:
+                feathers3.led_set(True)
+                try:
+                    await asyncio.wait_for(
+                        self.advertise_bt()
+                        ,timeout=CONNECTION_TIMEOUT
+                    )
+                except asyncio.TimeoutError:
+                    print("Advertising timed out after 2 seconds")
+            else:
+                feathers3.led_set(False)
+                await asyncio.sleep_ms(1_000)
+
+    async def advertise_bt(self):
+        async with await aioble.advertise(
+            _ADV_INTERVAL_MS,
+            name=DEVICE_NAME,
+            services=[_ENV_SENSE_UUID],
+            appearance=_ADV_APPEARANCE_GENERIC_HID,
+        ) as connection:
+            print("Connection from", connection.device)
+            await connection.disconnected()
 
     # Run both tasks.
     async def main(self):

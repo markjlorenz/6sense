@@ -5,6 +5,9 @@ class LIS3MDL:
     REG_Z = 0x2C #| 0x80  # OR with 0x80 to set the MSB for reading
     REG_CTL = 0x22
 
+    # SCALE = 6842 # https://github.com/adafruit/Adafruit_LIS3MDL/blob/master/Adafruit_LIS3MDL.cpp#L188
+    SCALE = 1 # https://github.com/adafruit/Adafruit_LIS3MDL/blob/master/Adafruit_LIS3MDL.cpp#L188
+
     def __init__(self, i2c):
         self.i2c = i2c
 
@@ -23,9 +26,9 @@ class LIS3MDL:
         z_reading = self.i2c.readfrom_mem(LIS3MDL.ADDRESS, LIS3MDL.REG_Z, 2)
 
         return (
-            self._to_int(x_reading)
-            ,self._to_int(y_reading)
-            ,self._to_int(z_reading)
+            self._to_int(x_reading)  / LIS3MDL.SCALE
+            ,self._to_int(y_reading) / LIS3MDL.SCALE
+            ,self._to_int(z_reading) / LIS3MDL.SCALE
         )
 
     def read_control(self):
