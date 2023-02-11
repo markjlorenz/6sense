@@ -68,6 +68,18 @@ while not wlan.isconnected():
     pass
 ```
 
+## Depoying
+
+```
+# Copy the aioble library on the device to make development faster
+# If not already done.
+mpremote connect $DEVICE cp -r src/packages/aioble/ :
+
+# Copy /lib and code.py
+mpremote connect $DEVICE cp  src/app/lib/* :/lib
+mpremote connect $DEVICE cp  src/app/code.py :
+```
+
 ## TODO
 
--[ ] Speed up the sample rate on the LIS3MDL
+-[x]hSpeed up the sample rate on the LIS3MDL
