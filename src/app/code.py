@@ -1,51 +1,36 @@
+# Meaning of the lights:
+# - When the neopixel is cycling the color wheel, BLE is enabled.
+# - If the LED is blinking fast (0.25s period), then the LIS3MDL is missing.
+# - If the blue LED is blinking slow (1s period), then the code crashed.
+# - If the LIS3MDL is plugged back in, no lights will be on.
+
 import sys
 sys.path.append('/remote/lib')
 
-import time, gc, os
-import neopixel
-import feathers3
-
-import machine
 import uasyncio as asyncio
 
 from lis3mdl import LIS3MDL
 from tact import Tact
 from ble_services import BLEService
-
-# Define pins
-class Pins:
-    def __init__(self):
-        self.NEOPIXEL = machine.Pin(13)
-        self.SCL = machine.Pin(9)
-        self.SDA = machine.Pin(8)
-        self.TACT_X = machine.Pin(12, machine.Pin.OUT)
-        self.TACT_Y = machine.Pin(6, machine.Pin.OUT)
-        self.TACT_Z = machine.Pin(5, machine.Pin.OUT)
-PINS = Pins()
-
-# Create a NeoPixel instance
-# Brightness of 0.3 is ample for the 1515 sized LED
-pixel = neopixel.NeoPixel(PINS.NEOPIXEL, 1)
+from pins import Pins
+import error_lights
 
 # Say hello
-print("\nHello from FeatherS3!")
+print("\nBooting!")
 print("------------------\n")
 
-lis3mdl = LIS3MDL(machine.I2C(1, scl=PINS.SCL, sda=PINS.SDA))
+PINS = Pins()
+
+# Make sure the lights are off to start
+PINS.lights_off()
+
+lis3mdl = LIS3MDL(PINS)
 
 pin_x = Tact(PINS.TACT_X)
 pin_y = Tact(PINS.TACT_Y)
 pin_z = Tact(PINS.TACT_Z)
 
-async def drive(pin):
-    while True:
-        # turn the pin on
-        pin.pin.value(True)
-        await asyncio.sleep(pin.half_period)
-
-        # turn the pin off
-        pin.pin.value(False)
-        await asyncio.sleep(pin.half_period)
+ble = BLEService(pin_x, pin_y, pin_z)
 
 async def update():
     while True:
@@ -63,14 +48,25 @@ async def update():
         ))
         await asyncio.sleep(0.01)
 
-asyncio.run(asyncio.gather(
-    drive(pin_x)
-    ,drive(pin_y)
-    ,drive(pin_z)
-    ,update()
-    ,BLEService(pin_x, pin_y, pin_z).main()
-))
+try:
+    asyncio.run(asyncio.gather(
+        pin_x.drive()
+        ,pin_y.drive()
+        ,pin_z.drive()
+        ,update()
+        ,ble.main()
+    ))
 
+except OSError as e:
+    if e.errno == errno.ENODEV:
+        error_lights.no_magnometer(e)
+    elif e.errno == errno.ETIMEDOUT:
+        error_lights.no_magnometer(e)
+    else:
+        raise
+
+except Exception as e:
+    error_lights.unknown_exception(e)
 
 # half_period = 0.1
 # while True:

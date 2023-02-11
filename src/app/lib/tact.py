@@ -1,4 +1,5 @@
 import math
+import uasyncio as asyncio
 
 SCALE_EXPONENT = 2
 PRE_SCALE_FACTOR = 1.01
@@ -25,3 +26,13 @@ class Tact:
     @hz.setter
     def hz(self, value):
         raise NotImplemented("Shouldn't be setting this value directly")
+
+    async def drive(self):
+        while True:
+            # turn the pin on
+            self.pin.value(True)
+            await asyncio.sleep(self.half_period)
+
+            # turn the pin off
+            self.pin.value(False)
+            await asyncio.sleep(self.half_period)

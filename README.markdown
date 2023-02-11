@@ -70,13 +70,4 @@ while not wlan.isconnected():
 
 ## TODO
 
--[x] Trigger the BLE on hall effect sensor
-       ```
-       import esp32
-       esp32.hall_sensor()
-       ```
--[x] Power down the BLE when not in use
--[x] Why does BLE crash when the client times out?
--[x] Why did my inverse frequency numbers go up?
--[x] Do something fun with the pixel: FeatherS3 helper library: https://github.com/UnexpectedMaker/esp32s3/blob/main/code/micropython/helper%20libraries/feathers3/feathers3.py
-https://github.com/UnexpectedMaker/esp32s3/blob/main/code/micropython/helper%20libraries/feathers3/feathers3.py
+-[ ] Speed up the sample rate on the LIS3MDL

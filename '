@@ -58,10 +58,9 @@ class BLEService:
             self.service, _ENV_SENSE_MAGZ_UUID, read=True, notify=True
         )
 
-        self.pixel = Pixel()
-
         aioble.register_services(self.service)
-
+        self.pixel = Pixel()
+        self.pixel.loop()
 
     # Helper to encode the temperature characteristic encoding (sint16, hundredths of a degree).
     def _encode(self, value):
@@ -92,6 +91,7 @@ class BLEService:
         while True:
             if feathers3.get_amb_light() > LIGHT_THRESHOLD:
                 self.pixel.on()
+                # feathers3.led_set(True)
                 try:
                     await asyncio.wait_for(
                         self.advertise_bt()
@@ -101,6 +101,7 @@ class BLEService:
                     print("Advertising timed out after 2 seconds")
             else:
                 self.pixel.off()
+                # feathers3.led_set(False)
                 await asyncio.sleep_ms(1_000)
 
     async def advertise_bt(self):
@@ -120,5 +121,4 @@ class BLEService:
             asyncio.create_task(self.battery_task())
             ,asyncio.create_task(self.pins_task())
             ,asyncio.create_task(self.peripheral_task())
-            ,asyncio.create_task(self.pixel.loop())
         )
