@@ -62,7 +62,7 @@ import network
 wlan = network.WLAN(network.STA_IF)
 wlan.active(True)
 
-wlan.connect('Lorenz-Family_v2.0', 'firebase')
+wlan.connect('$WIFI_NAME', '$PASSWORD')
 
 while not wlan.isconnected():
     pass
@@ -76,10 +76,10 @@ while not wlan.isconnected():
 mpremote connect $DEVICE cp -r src/packages/aioble/ :
 
 # Copy /lib and code.py
-mpremote connect $DEVICE cp  src/app/lib/* :/lib
+mpremote connect $DEVICE cp  src/app/lib/* :/lib/
 mpremote connect $DEVICE cp  src/app/code.py :
 ```
 
 ## TODO
 
--[x]hSpeed up the sample rate on the LIS3MDL
+-[x] Speed up the sample rate on the LIS3MDL
