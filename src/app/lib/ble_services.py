@@ -31,7 +31,7 @@ _ADV_APPEARANCE_GENERIC_HID = const(960)
 # How frequently to send advertising beacons.
 _ADV_INTERVAL_MS = 250_000
 
-LIGHT_THRESHOLD = 700 # bigger number, more light
+LIGHT_THRESHOLD    = 3_800 # bigger number, more light
 CONNECTION_TIMEOUT = 20.0  # seconds
 
 class BLEService:

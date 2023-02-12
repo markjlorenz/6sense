@@ -1,9 +1,9 @@
 import math
 import uasyncio as asyncio
 
-SCALE_EXPONENT = 1
+SCALE_EXPONENT   = 1
 PRE_SCALE_FACTOR = 20_000 / 32_768
-BOOST = 1
+BOOST            = 1
 
 # PRE_SCALE_FACTOR = 1.01
 # BOOST = 10_000

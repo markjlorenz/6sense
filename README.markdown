@@ -2,6 +2,10 @@
 
 [Unexpected Maker FeatherS3 Development Board](https://esp32s3.com/)
 
+## Enabling Bluetooth
+
+Bluetooth is enabled by the ambient light sensor.  To activate it, turn on the flashlight on your phone, and hold it over the device.  Through the white case, it will take a fairly bright light to trigger the sensor.
+
 For all of the below instructions:
 ```
 PROJECT=`pwd`
@@ -59,7 +63,7 @@ mpremote connect $DEVICE
 mpremote connect $DEVICE ls
 
 # Mount the source directory and run the code
-mpremote connect $DEVICE mount src/app exec "import code.py"
+mpremote connect $DEVICE mount src/app exec "development.py"
 ```
 
 ```
