@@ -82,6 +82,19 @@ mpremote connect $DEVICE cp  src/app/lib/* :/lib/
 mpremote connect $DEVICE cp  src/app/code.py :/boot.py
 ```
 
+## Trouble
+
+If you get into trouble with mpremote not being able to make filesystem commands, connect to the REPL and remove boot.py:
+```
+mpremote connect $DEVICE
+ctrl+b
+
+>>> import os
+>>> os.remove("/boot.py")
+```
+
+Connecting to the REPL will also give you access to the serial output.
+
 ## TODO
 
 -[x] Speed up the sample rate on the LIS3MDL
