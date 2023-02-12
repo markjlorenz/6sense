@@ -38,10 +38,10 @@ async def update():
         pin_y.half_period = y
         pin_z.half_period = z
 
-        print("Frequency: ({}, {}, {})".format(
-            pin_x.hz
-            ,pin_y.hz
-            ,pin_z.hz
+        print("Frequency: ({: >5}, {: >5}, {: >5})".format(
+            int(pin_x.hz)
+            ,int(pin_y.hz)
+            ,int(pin_z.hz)
         ))
         await asyncio.sleep(0.01)
 
