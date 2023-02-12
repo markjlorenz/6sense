@@ -73,11 +73,13 @@ while not wlan.isconnected():
 ```
 # Copy the aioble library on the device to make development faster
 # If not already done.
-mpremote connect $DEVICE cp -r src/packages/aioble/ :
+cd src
+mpremote connect $DEVICE cp -r packages/aioble/ :
 
 # Copy /lib and code.py
+cd ../
 mpremote connect $DEVICE cp  src/app/lib/* :/lib/
-mpremote connect $DEVICE cp  src/app/code.py :
+mpremote connect $DEVICE cp  src/app/code.py :/boot.py
 ```
 
 ## TODO

@@ -1,6 +1,5 @@
 import sys
-sys.path.append("/src/packages")
-sys.path.append('/remote/lib')
+sys.path.append("/packages")
 
 from micropython import const
 

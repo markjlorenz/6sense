@@ -4,14 +4,11 @@
 # - If the blue LED is blinking slow (1s period), then the code crashed.
 # - If the LIS3MDL is plugged back in, no lights will be on.
 
-import sys
-sys.path.append('/remote/lib')
-
 import uasyncio as asyncio
 
 from lis3mdl import LIS3MDL
 from tact import Tact
-from ble_services import BLEService
+from lib.ble_services import BLEService
 from pins import Pins
 import error_lights
 
