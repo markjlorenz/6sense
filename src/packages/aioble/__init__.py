@@ -16,16 +16,16 @@ try:
 except:
     log_info("Central support disabled")
 
-try:
-    from .server import (
-        Service,
-        Characteristic,
-        BufferedCharacteristic,
-        Descriptor,
-        register_services,
-    )
-except:
-    log_info("GATT server support disabled")
+# try:
+from .server import (
+    Service,
+    Characteristic,
+    BufferedCharacteristic,
+    Descriptor,
+    register_services,
+)
+# except:
+#     log_info("GATT server support disabled")
 
 
 ADDR_PUBLIC = const(0)

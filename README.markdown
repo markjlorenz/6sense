@@ -63,13 +63,14 @@ mpremote connect $DEVICE
 mpremote connect $DEVICE ls
 
 # Mount the source directory and run the code
-mpremote connect $DEVICE mount src/app exec "development.py"
+mpremote connect $DEVICE mount src/app exec "import development.py"
 ```
 
 ```
 # Copy the aioble library on the device to make development faster
 cd $PROJECT/src
 mpremote connect $DEVICE cp -r packages/aioble/ :
+cd $PROJECT
 ```
 
 ```
@@ -121,6 +122,15 @@ screen $DEVICE 11520
 
 If you get into a lot of trouble or are running into file permission issues, see the flashing instructions in the Managing Firmware section above.
 
+## Operating Characteristics:
+
+- 0.081A idle current draw
+- Roughly the same when hooked up to electrodes
+- The TENs pads feel pretty good at ~12.5V
+
 ## TODO
 
 -[x] Speed up the sample rate on the LIS3MDL
+-[x] Use voltage instead of piezo https://www.youtube.com/watch?v=8G6jujtK6s0
+-[x] Program for voltage
+-[x] Print new sensor base

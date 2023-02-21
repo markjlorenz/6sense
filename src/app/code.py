@@ -8,7 +8,7 @@ import uasyncio as asyncio
 
 from lis3mdl import LIS3MDL
 from tact import Tact
-from lib.ble_services import BLEService
+from ble_services import BLEService
 from pins import Pins
 import error_lights
 

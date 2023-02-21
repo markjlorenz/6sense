@@ -11,7 +11,7 @@ import struct
 import feathers3
 from pixel import Pixel
 
-DEVICE_NAME = "6sense"
+DEVICE_NAME = "Electroception"
 
 # org.bluetooth.service.environmental_sensing
 _ENV_SENSE_UUID = bluetooth.UUID(0x181A)
@@ -32,7 +32,7 @@ _ADV_APPEARANCE_GENERIC_HID = const(960)
 _ADV_INTERVAL_MS = 250_000
 
 LIGHT_THRESHOLD    = 3_800 # bigger number, more light
-CONNECTION_TIMEOUT = 20.0  # seconds
+CONNECTION_TIMEOUT = 30.0  # seconds
 
 class BLEService:
 
