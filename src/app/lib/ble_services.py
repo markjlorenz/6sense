@@ -12,17 +12,17 @@ import feathers3
 from pixel import Pixel
 
 DEVICE_NAME = "Electroception"
+VERSION     = 202302260121
 
 # org.bluetooth.service.environmental_sensing
 _ENV_SENSE_UUID = bluetooth.UUID(0x181A)
 
 # https://btprodspecificationrefs.blob.core.windows.net/assigned-values/16-bit%20UUID%20Numbers%20Document.pdf
-# org.bluetooth.characteristic.temperature
-_ENV_SENSE_BATT_UUID = bluetooth.UUID(0x180F)
-# _ENV_SENSE_MAG_UUID = bluetooth.UUID(0x2AA1)
-_ENV_SENSE_MAGX_UUID = bluetooth.UUID('00002AA1-111-1111-1111-1111111111111')
-_ENV_SENSE_MAGY_UUID = bluetooth.UUID('00002AA1-222-2222-2222-2222222222222')
-_ENV_SENSE_MAGZ_UUID = bluetooth.UUID('00002AA1-333-3333-3333-3333333333333')
+_ENV_SENSE_BATT_UUID    = bluetooth.UUID(0x180F)
+_ENV_SENSE_VERSION_UUID = bluetooth.UUID(0x180A)
+_ENV_SENSE_MAGX_UUID    = bluetooth.UUID('00002AA1-111-1111-1111-1111111111111')
+_ENV_SENSE_MAGY_UUID    = bluetooth.UUID('00002AA1-222-2222-2222-2222222222222')
+_ENV_SENSE_MAGZ_UUID    = bluetooth.UUID('00002AA1-333-3333-3333-3333333333333')
 
 # https://developer.nordicsemi.com/nRF5_SDK/nRF51_SDK_v4.x.x/doc/html/group___b_l_e___a_p_p_e_a_r_a_n_c_e_s.html
 # org.bluetooth.characteristic.gap.appearance.xml
@@ -35,7 +35,6 @@ LIGHT_THRESHOLD    = 3_800 # bigger number, more light
 CONNECTION_TIMEOUT = 30.0  # seconds
 
 class BLEService:
-
     def __init__(self, pin_x, pin_y, pin_z):
         self.pin_x = pin_x
         self.pin_y = pin_y
@@ -46,6 +45,9 @@ class BLEService:
 
         self.batt_characteristic = aioble.Characteristic(
             self.service, _ENV_SENSE_BATT_UUID, read=True, notify=True
+        )
+        self.version_characteristic = aioble.Characteristic(
+            self.service, _ENV_SENSE_VERSION_UUID, read=True, notify=True
         )
         self.magx_characteristic = aioble.Characteristic(
             self.service, _ENV_SENSE_MAGX_UUID, read=True, notify=True
@@ -64,13 +66,17 @@ class BLEService:
 
     # Helper to encode the temperature characteristic encoding (sint16, hundredths of a degree).
     def _encode(self, value):
-        # return struct.pack("<h", int(value))
         return struct.pack("<I", int(value))
 
     async def battery_task(self):
         while True:
             batt_value = feathers3.get_battery_voltage()
             self.batt_characteristic.write(self._encode(batt_value))
+            await asyncio.sleep_ms(1_000)
+
+    async def version_task(self):
+        while True:
+            self.version_characteristic.write(self._encode(VERSION))
             await asyncio.sleep_ms(1_000)
 
     async def pins_task(self):
@@ -117,6 +123,7 @@ class BLEService:
         print("Starting BLE")
         await asyncio.gather(
             asyncio.create_task(self.battery_task())
+            ,asyncio.create_task(self.version_task())
             ,asyncio.create_task(self.pins_task())
             ,asyncio.create_task(self.peripheral_task())
             ,asyncio.create_task(self.pixel.loop())

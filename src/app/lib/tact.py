@@ -3,6 +3,7 @@ import uasyncio as asyncio
 
 SCALE_EXPONENT   = 1
 BOOST            = 1
+OFFSET           = 10
 
 # For piezo
 #PRE_SCALE_FACTOR = 20_000 / 32_768
@@ -25,8 +26,8 @@ class Tact:
 
     @half_period.setter
     def half_period(self, value):
-        self._half_period = 0 if value == 0 else 1 / math.pow(abs(value) * PRE_SCALE_FACTOR, SCALE_EXPONENT) * BOOST
-        self._hz = 0 if self._half_period == 0 else 1/self._half_period
+        self._half_period = 1 / OFFSET if value == 0 else 1 / (math.pow(abs(value) * PRE_SCALE_FACTOR, SCALE_EXPONENT) * BOOST + OFFSET)
+        self._hz = 0 if self._half_period == 0 else 1 / self._half_period
 
     @property
     def hz(self):
