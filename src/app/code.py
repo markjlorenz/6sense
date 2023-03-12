@@ -9,6 +9,7 @@ import uasyncio as asyncio
 from lis3mdl import LIS3MDL
 from tact import Tact
 from ble_services import BLEService
+from test_patterns import TestPattern
 from pins import Pins
 import error_lights
 
@@ -28,10 +29,16 @@ pin_y = Tact(PINS.TACT_Y)
 pin_z = Tact(PINS.TACT_Z)
 
 ble = BLEService(pin_x, pin_y, pin_z)
+test_pattern = TestPattern()
 
 async def update():
     while True:
-        x, y, z = lis3mdl.read()
+        if ble.test_pattern:
+            x, y, z = test_pattern.rosette()
+            await asyncio.sleep(2)
+        else:
+            x, y, z = lis3mdl.read()
+
         # print("Magnetic field: ({}, {}, {})".format(x, y, z))
 
         pin_x.half_period = x
@@ -54,6 +61,7 @@ try:
         ,ble.main()
     ))
 
+# Could update this to put `e` in a BLE Services characteristic, it's just plain text.
 except OSError as e:
     if e.errno == errno.ENODEV:
         error_lights.no_magnometer(e)
