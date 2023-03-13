@@ -14,8 +14,16 @@ PRE_SCALE_FACTOR = 100 / 32_768
 # PRE_SCALE_FACTOR = 1.01
 # BOOST = 10_000
 
+# Default value, can be overriden
+#
+# As suggested by doi:10.1088/1741-2560/13/4/046014
+# they recommend 200us, but I think the smallest resolution the micropython
+# can get is 1 ms.
+PULSE_WIDTH = 1 # ms
+
 class Tact:
     def __init__(self, board_pin):
+        self.pulse_width = PULSE_WIDTH
         self.pin = board_pin
         self._half_period = 0
         self._hz = 0
@@ -39,10 +47,11 @@ class Tact:
 
     async def drive(self):
         while True:
-            # turn the pin on
             self.pin.value(True)
-            await asyncio.sleep(self.half_period)
+            # Scheduler will not yield on `sleep_ms`: https://github.com/peterhinch/micropython-async/blob/master/v3/docs/TUTORIAL.md#23-delays
+            await asyncio.sleep_ms(self.pulse_width)
 
-            # turn the pin off
             self.pin.value(False)
-            await asyncio.sleep(self.half_period)
+            # Scheduler WILL yield on `sleep`
+            off_seconds = (2 * self.half_period) - (self.pulse_width / 1_000_000)
+            await asyncio.sleep(off_seconds)

@@ -3,7 +3,7 @@ import feathers3
 import uasyncio as asyncio
 from pins import Pins
 
-SPEED = 10  #ms
+SPEED = 10 / 1_000  #seconds
 
 class Pixel:
     def __init__(self):
@@ -30,4 +30,4 @@ class Pixel:
             self.pixel[0] = ( r, g, b, 0.5)
             self.pixel.write()
             self.color_index += 1
-            await asyncio.sleep_ms(SPEED)
+            await asyncio.sleep(SPEED)

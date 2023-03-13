@@ -21,7 +21,7 @@ import feathers3
 from pixel import Pixel
 
 DEVICE_NAME = "Electroception"
-VERSION     = 202302260121
+VERSION     = 202303120608
 
 # org.bluetooth.service.environmental_sensing
 _ENV_SENSE_UUID = bluetooth.UUID(0x181A)
@@ -88,16 +88,16 @@ class BLEService:
         while True:
             batt_value = feathers3.get_battery_voltage()
             self.batt_characteristic.write(self._encode(batt_value))
-            await asyncio.sleep_ms(1_000)
+            await asyncio.sleep(1)
 
     async def version_task(self):
         while True:
             self.version_characteristic.write(self._encode(VERSION))
-            await asyncio.sleep_ms(1_000)
+            await asyncio.sleep(1)
 
     async def debug_task(self):
         while True:
-            await asyncio.sleep_ms(1_000)
+            await asyncio.sleep(1)
             await self.debug_characteristic.written()
 
             raw_read = self.debug_characteristic.read()
@@ -107,7 +107,7 @@ class BLEService:
 
     async def pins_task(self):
         while True:
-            await asyncio.sleep_ms(100)
+            await asyncio.sleep(100 / 1_000)
             if self.connection:
                 x = self._encode(self.pin_x.hz)
                 y = self._encode(self.pin_y.hz)
@@ -147,7 +147,7 @@ class BLEService:
                     print("Advertising timed out after 2 seconds")
             else:
                 self.pixel.off()
-                await asyncio.sleep_ms(1_000)
+                await asyncio.sleep(1)
 
     async def advertise_bt(self):
         async with await aioble.advertise(
