@@ -102,7 +102,7 @@ class BLEService:
 
             raw_read = self.debug_characteristic.read()
             self.test_pattern = int(raw_read[0])
-            print("written: ", self.test_pattern)
+            print("Test patterns enabled: ", self.test_pattern)
             self.debug_characteristic.write(raw_read)
 
     async def pins_task(self):

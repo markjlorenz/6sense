@@ -2,6 +2,9 @@ MAX_FREQ = 32_764
 
 class TestPattern:
 
+    ROSETTE = 1
+    ALL     = 2
+
     def __init__(self):
         self.x = 0
         self.y = 0
@@ -22,3 +25,6 @@ class TestPattern:
             self.z = 0
 
         return self.x, self.y, self.z
+
+    def all(self):
+        return MAX_FREQ, MAX_FREQ, MAX_FREQ

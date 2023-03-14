@@ -33,9 +33,11 @@ test_pattern = TestPattern()
 
 async def update():
     while True:
-        if ble.test_pattern:
+        if ble.test_pattern == TestPattern.ROSETTE:
             x, y, z = test_pattern.rosette()
             await asyncio.sleep(2)
+        elif ble.test_pattern == TestPattern.ALL:
+            x, y, z = test_pattern.all()
         else:
             x, y, z = lis3mdl.read()
 
